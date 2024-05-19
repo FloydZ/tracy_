@@ -24,9 +24,7 @@
 #include <sys/reg.h>
 #include <sys/syscall.h>
 
-// todo
-#define TRACY_MANUAL_LIFETIME
-
+#include "../../public/tracy/Tracy.hpp"
 #include "../../public/common/TracyProtocol.hpp"
 #include "../../public/common/TracyStackFrames.hpp"
 #include "../../public/client/TracySysTrace.hpp"
@@ -41,7 +39,6 @@
     exit( 1 );
 }
 
-using namespace tracy;
 
 int main( int argc, char** argv )
 {
@@ -60,45 +57,33 @@ int main( int argc, char** argv )
     int seconds = -1;
     int64_t memoryLimit = -1;
 
-    int c;
-    while( ( c = getopt( argc, argv, "a:o:p:fs:m:" ) ) != -1 )
-    {
-        switch( c )
-        {
-        case 'a':
-            address = optarg;
-            break;
-        case 'o':
-            output = optarg;
-            break;
-        default:
-            Usage();
-            break;
-        }
-    }
-    pid_t child;
-    child = fork(); //create child
+    char* child_argv[] = {"/home/duda/Downloads/crypto/schemes/mirith-dss/Optimized_Implementation/mirith_tcith_avx2/build/bench_mirith", NULL};
 
-    if(child == 0) {
-        ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        tracy::StartupProfiler();
-        char* child_argv[] = {binary, NULL};
-        execv("/bin/ls", child_argv);
-    } else {
-        int status;
-        long long ins_count = 0;
-        while(true) {
-            //stop tracing if child terminated successfully
-            wait(&status);
-            if(WIFEXITED(status))
-                break;
+    //tracy::StartupProfiler();
+    ZoneScoped;
+    execv(child_argv[0], child_argv);
+    //tracy::ShutdownProfiler();
 
-            ins_count++;
-            ptrace(PTRACE_SINGLESTEP, child, NULL, NULL);
-        }
+    //pid_t child;
+    //child = fork(); //create child
+    //if(child == 0) {
+    //    tracy::StartupProfiler();
+    //    printf("child init\n");
+    //    execv(child_argv[0], child_argv);
+    //    perror(0);
+    //    tracy::ShutdownProfiler();
+    //    printf("child finished\n");
+    //    _exit(0);
+    //} else {
+    //    // keep alive as long as the child is alive
+    //    siginfo_t info;
+    //    if(0>waitid(P_PID, child, &info, WEXITED)){
+    //        perror(0);
+    //        return -1;
+    //    }
+    //    printf("parent finished\n");
 
-        printf("\n%lld Instructions executed.\n", ins_count);
-    }
+    //    return 0;
+    //}
 
-    return 0;
 }

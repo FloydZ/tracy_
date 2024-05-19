@@ -20,7 +20,7 @@ if (NOT NO_ISA_EXTENSIONS)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT LEGACY)
-    set(USE_WAYLAND ON)
+	set(USE_WAYLAND OFF)
 else()
     set(USE_WAYLAND OFF)
 endif()
