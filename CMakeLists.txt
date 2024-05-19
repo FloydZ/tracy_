@@ -187,4 +187,4 @@ if(TRACY_CLIENT_PYTHON)
 endif()
 
 # TODO remove
-add_subdirectory(perf_wrapper)
+add_subdirectory(monitor)

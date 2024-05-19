@@ -8,7 +8,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../cmake/version.cmake)
 set(CMAKE_CXX_STANDARD 20)
 
 project(
-    tracy-perf
+    monitor
     LANGUAGES C CXX
     VERSION ${TRACY_VERSION_STRING}
 )
@@ -21,13 +21,10 @@ include(${CMAKE_CURRENT_LIST_DIR}/../cmake/server.cmake)
 
 
 set(PROGRAM_FILES
-    src/perf.cpp
-        ../public/TracyClient.cpp
-
+    src/monitor.cpp
+    ../public/TracyClient.cpp
 )
 
 add_executable(${PROJECT_NAME} ${PROGRAM_FILES} ${COMMON_FILES})
-# target_link_libraries(${PROJECT_NAME} PRIVATE TracyServer TracyGetOpt)
-#target_compile_options(${PROJECT_NAME} PRIVATE -DTRACY_DELAYED_INIT=1 -DTRACY_MANUAL_LIFETIME=1 -DTRACY_ENABLE=1)
-target_compile_options(${PROJECT_NAME} PRIVATE -DTRACY_ENABLE=1)
+target_compile_options(${PROJECT_NAME} PRIVATE -DTRACY_ENABLE=1 -DTRACY_DELAYED_INIT -DTRACY_MANUAL_LIFETIME -DTRACY_NO_FRAME_IMAGE)
 set_property(DIRECTORY ${CMAKE_CURRENT_LIST_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})

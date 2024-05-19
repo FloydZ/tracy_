@@ -744,6 +744,7 @@ static const char* ReadFile( const char* path )
     return tmp;
 }
 
+extern uint32_t ___tracy_magic_pid_override;
 bool SysTraceStart( int64_t& samplingPeriod )
 {
 #ifndef CLOCK_MONOTONIC_RAW
@@ -813,7 +814,7 @@ bool SysTraceStart( int64_t& samplingPeriod )
 #endif
 
     samplingPeriod = GetSamplingPeriod();
-    uint32_t currentPid = (uint32_t)getpid();
+    uint32_t currentPid = ___tracy_magic_pid_override != 0 ? ___tracy_magic_pid_override : (uint32_t)getpid();
 
     s_numCpus = (int)std::thread::hardware_concurrency();
 

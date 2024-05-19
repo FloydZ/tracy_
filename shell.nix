@@ -21,5 +21,12 @@ stdenv.mkDerivation {
     dbus
     linuxKernel.packages.linux_6_1.perf
     tbb
+    gdb
+    elfutils
   ];
+
+  shellHook = '' 
+    CC=gcc
+    CXX=g++
+  '';
 }

@@ -733,11 +733,21 @@ static const char* GetHostInfo()
     return buf;
 }
 
+
+
+#ifdef __linux__
+uint32_t ___tracy_magic_pid_override = 0;
+#endif
+
 static uint64_t GetPid()
 {
 #if defined _WIN32
     return uint64_t( GetCurrentProcessId() );
-#else
+#elif defined __linux__
+    if( ___tracy_magic_pid_override != 0 ) {
+        return uint64_t(___tracy_magic_pid_override);
+    }
+
     return uint64_t( getpid() );
 #endif
 }
