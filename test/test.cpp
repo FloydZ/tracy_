@@ -2,6 +2,21 @@
 #include <mutex>
 #include <thread>
 #include <stdlib.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <sys/stat.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <sys/user.h>
+#include <sys/reg.h>
+#include <sys/syscall.h>
+
 #include "Tracy.hpp"
 #include "../common/TracySystem.hpp"
 
@@ -301,43 +316,68 @@ void DeadlockTest2()
 
 int main()
 {
-    auto t1 = std::thread( TestFunction );
-    auto t2 = std::thread( TestFunction );
-    auto t3 = std::thread( ResolutionCheck );
-    auto t4 = std::thread( ScopeCheck );
-    auto t5 = std::thread( Lock1 );
-    auto t6 = std::thread( Lock2 );
-    auto t7 = std::thread( Lock3 );
-    auto t8 = std::thread( Plot );
-    auto t9 = std::thread( Plot );
-    auto t10 = std::thread( MessageTest );
-    auto t11 = std::thread( DepthTest );
-    auto t12 = std::thread( RecLock );
-    auto t13 = std::thread( RecLock );
-#ifdef __cpp_lib_shared_mutex
-    auto t14 = std::thread( SharedRead1 );
-    auto t15 = std::thread( SharedRead1 );
-    auto t16 = std::thread( SharedRead2 );
-    auto t17 = std::thread( SharedWrite1 );
-    auto t18 = std::thread( SharedWrite2 );
-#endif
-    auto t19 = std::thread( CallstackTime );
-    auto t20 = std::thread( OnlyMemory );
-    auto t21 = std::thread( DeadlockTest1 );
-    auto t22 = std::thread( DeadlockTest2 );
+//    auto t1 = std::thread( TestFunction );
+//    auto t2 = std::thread( TestFunction );
+//    auto t3 = std::thread( ResolutionCheck );
+//    auto t4 = std::thread( ScopeCheck );
+//    auto t5 = std::thread( Lock1 );
+//    auto t6 = std::thread( Lock2 );
+//    auto t7 = std::thread( Lock3 );
+//    auto t8 = std::thread( Plot );
+//    auto t9 = std::thread( Plot );
+//    auto t10 = std::thread( MessageTest );
+//    auto t11 = std::thread( DepthTest );
+//    auto t12 = std::thread( RecLock );
+//    auto t13 = std::thread( RecLock );
+//#ifdef __cpp_lib_shared_mutex
+//    auto t14 = std::thread( SharedRead1 );
+//    auto t15 = std::thread( SharedRead1 );
+//    auto t16 = std::thread( SharedRead2 );
+//    auto t17 = std::thread( SharedWrite1 );
+//    auto t18 = std::thread( SharedWrite2 );
+//#endif
+//    auto t19 = std::thread( CallstackTime );
+//    auto t20 = std::thread( OnlyMemory );
+//    auto t21 = std::thread( DeadlockTest1 );
+//    auto t22 = std::thread( DeadlockTest2 );
+
+    ZoneScoped;
+    tracy::SetThreadName("Main");
+    TracyMessageL( "Tick" );
 
     int x, y;
     auto image = stbi_load( "image.jpg", &x, &y, nullptr, 4 );
 
-    for(;;)
-    {
-        TracyMessageL( "Tick" );
-        std::this_thread::sleep_for( std::chrono::milliseconds( 2 ) );
-        {
-            ZoneScoped;
-            std::this_thread::sleep_for( std::chrono::milliseconds( 2 ) );
-        }
+    char* ca[] = {"/home/duda/Downloads/crypto/schemes/mirith-dss/Optimized_Implementation/mirith_tcith_avx2/build/bench_mirith", NULL};
+
+    for(;;){
+        ZoneScoped;
+    	// system(child_argv[0]);
+    	pid_t child = fork(); //create child
+		if (child == 0) {
+			execv(ca[0], ca);
+			exit(0);
+		} else {
+    		siginfo_t info;
+    		if(0>waitid(P_PID, child, &info, WEXITED)){
+    		    perror(0);
+    		    return -1;
+    		}
+		}
+
+
         FrameImage( image, x, y, 0, false );
         FrameMark;
     }
+
+    // for(;;) {
+    //     TracyMessageL( "Tick" );
+    //     std::this_thread::sleep_for( std::chrono::milliseconds( 2 ) );
+    //     {
+    //         ZoneScoped;
+    //         std::this_thread::sleep_for( std::chrono::milliseconds( 2 ) );
+    //     }
+    //     FrameImage( image, x, y, 0, false );
+    //     FrameMark;
+    // }
 }
