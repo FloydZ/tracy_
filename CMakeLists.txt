@@ -5,6 +5,19 @@ include(cmake/version.cmake)
 
 project(Tracy LANGUAGES CXX VERSION ${TRACY_VERSION_STRING})
 
+
+# TODO remove
+set(CMAKE_VERBOSE_MAKEFILE ON)
+# needed for nvim autocompletion
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES
+            ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+endif()
+
+
+
+
 if(${BUILD_SHARED_LIBS})
 	set(DEFAULT_STATIC OFF)
 else()
@@ -58,7 +71,7 @@ macro(set_option option help value)
 endmacro()
 
 set_option(TRACY_ENABLE "Enable profiling" ON)
-set_option(TRACY_ON_DEMAND "On-demand profiling" OFF)
+set_option(TRACY_ON_DEMAND "On-demand profiling" ON)
 set_option(TRACY_CALLSTACK "Enforce callstack collection for tracy regions" OFF)
 set_option(TRACY_NO_CALLSTACK "Disable all callstack related functionality" OFF)
 set_option(TRACY_NO_CALLSTACK_INLINES "Disables the inline functions in callstacks" OFF)
@@ -74,8 +87,8 @@ set_option(TRACY_NO_VSYNC_CAPTURE "Disable capture of hardware Vsync events" OFF
 set_option(TRACY_NO_FRAME_IMAGE  "Disable the frame image support and its thread" OFF)
 set_option(TRACY_NO_SYSTEM_TRACING  "Disable systrace sampling" OFF)
 set_option(TRACY_PATCHABLE_NOPSLEDS  "Enable nopsleds for efficient patching by system-level tools (e.g. rr)" OFF)
-set_option(TRACY_DELAYED_INIT "Enable delayed initialization of the library (init on first call)" OFF)
-set_option(TRACY_MANUAL_LIFETIME "Enable the manual lifetime management of the profile" OFF)
+set_option(TRACY_DELAYED_INIT "Enable delayed initialization of the library (init on first call)" ON)
+set_option(TRACY_MANUAL_LIFETIME "Enable the manual lifetime management of the profile" ON)
 set_option(TRACY_FIBERS "Enable fibers support" OFF)
 set_option(TRACY_NO_CRASH_HANDLER "Disable crash handling" OFF)
 set_option(TRACY_TIMER_FALLBACK "Use lower resolution timers" OFF)
@@ -172,3 +185,6 @@ if(TRACY_CLIENT_PYTHON)
 
     add_subdirectory(python)
 endif()
+
+# TODO remove
+add_subdirectory(perf_wrapper)

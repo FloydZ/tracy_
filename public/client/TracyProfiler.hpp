@@ -48,7 +48,7 @@
 
 namespace tracy
 {
-#if defined(TRACY_DELAYED_INIT) && defined(TRACY_MANUAL_LIFETIME)
+#if defined(TRACY_MANUAL_LIFETIME)
 TRACY_API void StartupProfiler();
 TRACY_API void ShutdownProfiler();
 TRACY_API bool IsProfilerStarted();
