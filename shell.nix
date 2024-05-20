@@ -23,6 +23,7 @@ stdenv.mkDerivation {
     tbb
     gdb
     elfutils
+    libbfd  # needed for addr2line
   ];
 
   shellHook = '' 
