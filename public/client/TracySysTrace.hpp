@@ -21,6 +21,7 @@ void SysTraceWorker( void* ptr );
 
 void SysTraceGetExternalName( uint64_t thread, const char*& threadName, const char*& name );
 
+
 }
 
 #endif

@@ -3,6 +3,11 @@
 #include "TracySysTrace.hpp"
 #include "../common/TracySystem.hpp"
 
+
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+
 #ifdef TRACY_HAS_SYSTEM_TRACING
 
 #ifndef TRACY_SAMPLING_HZ
@@ -610,6 +615,16 @@ void SysTraceGetExternalName( uint64_t thread, const char*& threadName, const ch
 #    include <sys/ioctl.h>
 #    include <sys/syscall.h>
 
+// apparently this nonsense is needed, see:
+// https://sourceware.org/bugzilla/show_bug.cgi?id=14243
+#ifndef PACKAGE
+  #define PACKAGE
+#endif
+#ifndef PACKAGE_VERSION
+  #define PACKAGE_VERSION
+#endif
+#    include <bfd.h>
+
 #    if defined __i386 || defined __x86_64__
 #      include "TracyCpuid.hpp"
 #    endif
@@ -652,6 +667,8 @@ static bool CurrentProcOwnsThread( uint32_t tid )
         return false;
     }
 }
+
+
 
 static int perf_event_open( struct perf_event_attr* hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags )
 {
